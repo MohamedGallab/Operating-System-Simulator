@@ -224,16 +224,16 @@ public class OS {
 	
 	public void read(String[] instruction) {
 		
-		
 		try (Stream<String> stream = Files.lines(Paths.get(instruction[2]))){
 		    instruction[1] = stream.collect(Collectors.joining(System.lineSeparator()));
 		} catch (IOException ex) {
 		    ex.printStackTrace();
-		}//wrong path
+		}
 		executingProcess.decrementNextInstruction();
 	}
 
 	public void input(String[] instruction) {
+		//printing
 		try {
 		    Scanner sc = new Scanner(System.in); 
 		    instruction[1] = sc.nextLine();
@@ -328,14 +328,14 @@ public class OS {
 		os.run();
 		slowPrint("\n"+ "All processes have been executed successfully!" );
 		sleep(1000);
-		System.out.println("\n"+"𝒞𝓇ℯ𝒹𝒾𝓉𝓈 :");
+		System.out.println("\n"+"ð�’žð�“‡â„¯ð�’¹ð�’¾ð�“‰ð�“ˆ :");
 		sleep(1000);
-		System.out.println("𝒜𝓂𝓇 ℳℴ𝒽𝒶𝓂ℯ𝒹");
+		System.out.println("ð�’œð�“‚ð�“‡ â„³â„´ð�’½ð�’¶ð�“‚â„¯ð�’¹");
 		sleep(1000);
-		System.out.println("ℳℴ𝒽𝒶𝓂ℯ𝒹 𝒲𝒶ℯ𝓁");
+		System.out.println("â„³â„´ð�’½ð�’¶ð�“‚â„¯ð�’¹ ð�’²ð�’¶â„¯ð�“�");
 		sleep(1000);
-		System.out.println("ℳℴ𝒽𝒶𝓂ℯ𝒹 𝒪𝓈𝒶𝓂𝒶");	
+		System.out.println("â„³â„´ð�’½ð�’¶ð�“‚â„¯ð�’¹ ð�’ªð�“ˆð�’¶ð�“‚ð�’¶");	
 		sleep(1000);
-		System.out.println("𝒴ℴ𝓊𝓈𝓈ℯ𝒻 ℳℴ𝒶𝓉𝒶𝓏");
+		System.out.println("ð�’´â„´ð�“Šð�“ˆð�“ˆâ„¯ð�’» â„³â„´ð�’¶ð�“‰ð�’¶ð�“�");
 	}
 }
