@@ -65,11 +65,11 @@ public class OS {
 	}
 
 	public void start(){
-
-		Scanner sc = new Scanner(System.in); 
 		System.out.println("Hello and welcome to SteakHolderOS");
-		//sleep(1000);
 		slowPrint("Do you want to specify the amount of time slices allowed per process? Default is 2.(Y/N)");
+		Scanner sc = new Scanner(System.in); 
+		//sleep(1000);
+		while(true){
 	    String wantsSlices = sc.nextLine();
 	    if(wantsSlices.toLowerCase().equals("y")){
 		    int slices;
@@ -89,7 +89,18 @@ public class OS {
 			}
 			}
 			this.timeSlice = slices;
+		    break;
 	    }
+	    else if (wantsSlices.toLowerCase().equals("n")){
+	    	break;
+	    }
+	    else{
+//	    	sleep(1000);
+			System.out.println("Please choose either Y or N!");
+//			sleep(1000);
+			slowPrint("Do you want to specify the amount of time slices allowed per process? Default is 2.(Y/N)");
+	    }
+		}
 	    slowPrint("Enter the number of processes you want to add:");
 	    int numOfProcesses;
 		while(true){
@@ -324,7 +335,7 @@ public class OS {
 
 	public static void main(String[] args) {
 		OS os = new OS();
-		//os.start();
+		os.start();
 		os.run();
 		slowPrint("\n"+ "All processes have been executed successfully!" );
 		sleep(1000);
