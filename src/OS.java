@@ -328,14 +328,14 @@ public class OS {
 		os.run();
 		slowPrint("\n"+ "All processes have been executed successfully!" );
 		sleep(1000);
-		System.out.println("\n"+"ð�’žð�“‡â„¯ð�’¹ð�’¾ð�“‰ð�“ˆ :");
+		System.out.println("\n"+"Credits :");
 		sleep(1000);
-		System.out.println("ð�’œð�“‚ð�“‡ â„³â„´ð�’½ð�’¶ð�“‚â„¯ð�’¹");
+		System.out.println("Amr Mohamed");
 		sleep(1000);
-		System.out.println("â„³â„´ð�’½ð�’¶ð�“‚â„¯ð�’¹ ð�’²ð�’¶â„¯ð�“�");
+		System.out.println("Mohamed Wael");
 		sleep(1000);
-		System.out.println("â„³â„´ð�’½ð�’¶ð�“‚â„¯ð�’¹ ð�’ªð�“ˆð�’¶ð�“‚ð�’¶");	
+		System.out.println("Mohamed Osama");	
 		sleep(1000);
-		System.out.println("ð�’´â„´ð�“Šð�“ˆð�“ˆâ„¯ð�’» â„³â„´ð�’¶ð�“‰ð�’¶ð�“�");
+		System.out.println("Yousef Moataz");
 	}
 }
