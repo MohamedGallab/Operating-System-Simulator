@@ -82,7 +82,7 @@ public class OS {
 				break;
 			}
 			catch(Exception ex){
-			//	sleep(1000);
+//	            sleep(1000);
 				System.out.println("The character you wrote was not a number!");
 //				sleep(1000);
 				slowPrint("Enter the number of slices you want:");
