@@ -8,6 +8,7 @@ public class Process {
 	private int arrivalTime;
 	private int currentInstruction = 0;
 	private HashMap<String, String> map = new HashMap<String, String>();
+
 	public Process(int pID, ArrayList<String[]> instructions, int timetolive, int arrivalTime) {
 		super();
 		PID = pID;
@@ -19,7 +20,7 @@ public class Process {
 	public int getPID() {
 		return PID;
 	}
-	
+
 	public HashMap<String, String> getMap() {
 		return map;
 	}
@@ -55,13 +56,18 @@ public class Process {
 	public int getTimetolive() {
 		return timetolive;
 	}
-	
+
 	public void decrementNextInstruction() {
 		currentInstruction--;
 	}
 
 	public boolean isProcessDone() {
 		return currentInstruction == instructions.size();
+	}
+
+	public String toString() {
+		// beautify this
+		return "P" + PID;
 	}
 
 }
