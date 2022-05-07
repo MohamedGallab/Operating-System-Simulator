@@ -66,8 +66,12 @@ public class Process {
 	}
 
 	public String toString() {
-		// beautify this
 		return "P" + PID;
+	}
+	
+	public void assign(String[] instruction) {
+		map.put(instruction[1],
+				map.getOrDefault(instruction[2], instruction[2]));
 	}
 
 }

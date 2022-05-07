@@ -1,18 +1,12 @@
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class OS {
+	private LinkedList<Process> newQ = new LinkedList<>();
 	private Queue<Process> readyQ = new LinkedList<>();
 	private Queue<Process> blockedQ = new LinkedList<>();
 	private HashMap<String, Mutex> mutexes = new HashMap<String, Mutex>();
@@ -39,7 +34,8 @@ public class OS {
 	public static void sleep(int x) {
 		try {
 			Thread.sleep(x);
-		} catch (InterruptedException ex) {
+		}
+		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
 	}
@@ -47,10 +43,12 @@ public class OS {
 	public static void slowPrint(String text) {
 		for (int i = 0; i < text.length(); i++) {
 			System.out.printf("%c", text.charAt(i));
-//		    try{
-//		        Thread.sleep(70);
-//		    }catch(InterruptedException ex){
-//		        Thread.currentThread().interrupt();
+			try {
+				Thread.sleep(70);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 
@@ -60,14 +58,14 @@ public class OS {
 
 	public void createProcess(String path, int arrivalTime) throws IOException {
 		ArrayList<String[]> instructions = interpreter.parse(path);
-		readyQ.add(new Process(pid++, instructions, this.timeSlice, arrivalTime));
+		newQ.add(new Process(pid++, instructions, this.timeSlice, arrivalTime));
 	}
 
 	public void start() {
 		System.out.println("Hello and welcome to SteakHolderOS");
 		slowPrint("Do you want to specify the amount of time slices allowed per process? Default is 2.(Y/N)");
 		Scanner sc = new Scanner(System.in);
-		// sleep(1000);
+		sleep(1000);
 		while (true) {
 			String wantsSlices = sc.nextLine();
 			if (wantsSlices.toLowerCase().equals("y")) {
@@ -79,21 +77,24 @@ public class OS {
 						slices = sc.nextInt();
 
 						break;
-					} catch (Exception ex) {
-//	            sleep(1000);
+					}
+					catch (Exception ex) {
+						sleep(1000);
 						System.out.println("The character you wrote was not a number!");
-//				sleep(1000);
+						sleep(1000);
 						slowPrint("Enter the number of slices you want:");
 					}
 				}
 				this.timeSlice = slices;
 				break;
-			} else if (wantsSlices.toLowerCase().equals("n")) {
+			}
+			else if (wantsSlices.toLowerCase().equals("n")) {
 				break;
-			} else {
-//	    	sleep(1000);
+			}
+			else {
+				sleep(1000);
 				System.out.println("Please choose either Y or N!");
-//			sleep(1000);
+				sleep(1000);
 				slowPrint("Do you want to specify the amount of time slices allowed per process? Default is 2.(Y/N)");
 			}
 		}
@@ -106,15 +107,17 @@ public class OS {
 				if (numOfProcesses < 1)
 					throw new IndexOutOfBoundsException();
 				break;
-			} catch (IndexOutOfBoundsException ex) {
-//			sleep(1000);
+			}
+			catch (IndexOutOfBoundsException ex) {
+				sleep(1000);
 				System.out.println("Please enter a number greater than 0!");
-//			sleep(1000);
+				sleep(1000);
 				slowPrint("Enter the number of processes you want to add:");
-			} catch (Exception ex) {
-//			sleep(1000);
+			}
+			catch (Exception ex) {
+				sleep(1000);
 				System.out.println("The character you wrote was not a number!");
-//			sleep(1000);
+				sleep(1000);
 				slowPrint("Enter the number of processes you want to add:");
 			}
 		}
@@ -130,10 +133,11 @@ public class OS {
 					path = sc.nextLine();
 					this.interpreter.parse(path);
 					break;
-				} catch (Exception ex) {
-//					sleep(1000);
+				}
+				catch (Exception ex) {
+					sleep(1000);
 					System.out.println("Invalid path!");
-//					sleep(1000);
+					sleep(1000);
 					slowPrint("Enter the path for process " + i + ":");
 				}
 			}
@@ -148,33 +152,35 @@ public class OS {
 					if (arrivals.contains(time))
 						throw new ArithmeticException();
 					break;
-				} catch (IndexOutOfBoundsException ex) {
-//					sleep(1000);
+				}
+				catch (IndexOutOfBoundsException ex) {
+					sleep(1000);
 					System.out.println("Please enter a positive number!");
-//					sleep(1000);
+					sleep(1000);
 					slowPrint("Enter the time you wish for process " + i + " to arrive:");
-				} catch (ArithmeticException ex) {
-//					sleep(1000);
+				}
+				catch (ArithmeticException ex) {
+					sleep(1000);
 					System.out.println("Another process will arrive at this time. Please pick a different time!");
-//					sleep(1000);
+					sleep(1000);
 					slowPrint("Enter the time you wish for process " + i + " to arrive:");
-				} catch (Exception ex) {
-//					sleep(1000);
+				}
+				catch (Exception ex) {
+					sleep(1000);
 					System.out.println("The character you wrote was not a number!");
-//					sleep(1000);
+					sleep(1000);
 					slowPrint("Enter the time you wish for process " + i + " to arrive:");
 				}
 			}
 			arrivals.add(time);
 			try {
 				this.createProcess(path, time);
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 
 			}
-//				sleep(1000);
+			sleep(1000);
 		}
-		Collections.sort((List<Process>) this.readyQ,
-				Comparator.comparingInt(Process -> ((Process) Process).getArrivalTime()));
 		slowPrint("Beginning execution....." + "\n");
 	}
 
@@ -183,62 +189,64 @@ public class OS {
 		switch (instruction[0]) {
 		case "print":
 			if (instruction[1].equals("readFile")) {
-				read(instruction, 1);
-			} else if (instruction[1].equals("input")) {
+				readFile(instruction, 1);
+			}
+			else if (instruction[1].equals("input")) {
 				input(instruction, 1);
-			} else {
+			}
+			else {
 				print(instruction);
 			}
 			break;
 		case "assign":
 			if (instruction[2].equals("readFile")) {
-				read(instruction, 2);
-			} else if (instruction[2].equals("input")) {
+				readFile(instruction, 2);
+			}
+			else if (instruction[2].equals("input")) {
 				input(instruction, 2);
-			} else {
-				assign(instruction);
+			}
+			else {
+				executingProcess.assign(instruction);
 			}
 			break;
 		case "writeFile":
 			if (instruction[2].equals("readFile")) {
-				read(instruction, 2);
-			} else if (instruction[2].equals("input")) {
+				readFile(instruction, 2);
+			}
+			else if (instruction[2].equals("input")) {
 				input(instruction, 2);
-			} else {
+			}
+			else {
 				writeFile(instruction);
 			}
 			break;
 		case "printFromTo":
-
-//			prntfrmto read x read y
-//			prntfrmto x read y
-//			prntfrmto read x y
-//			prntfrmto x y
-
 			if (instruction[1].equals("readFile")) {
-				read(instruction, 1);
-			} else if (instruction[1].equals("input")) {
+				readFile(instruction, 1);
+			}
+			else if (instruction[1].equals("input")) {
 				input(instruction, 1);
-			} else if (instruction.length > 3 && instruction[3].equals("readFile")) {
-				read(instruction, 3);
-			} else if (instruction.length > 3 && instruction[3].equals("input")) {
+			}
+			else if (instruction.length > 3 && instruction[3].equals("readFile")) {
+				readFile(instruction, 3);
+			}
+			else if (instruction.length > 3 && instruction[3].equals("input")) {
 				input(instruction, 3);
-			} else {
-//				prntfrmto x x y y
-//				prntfrmto x x y
-//				prntfrmto x y y
-//				prntfrmto x y
-
+			}
+			else {
 				if (instruction.length == 3) {
 					printFromTo(instruction[1], instruction[2]);
-				} else if (instruction.length == 4) {
+				}
+				else if (instruction.length == 4) {
 					try {
 						Integer x = Integer.parseInt(instruction[2]);
 						printFromTo(instruction[1], instruction[2]);
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						printFromTo(instruction[1], instruction[3]);
 					}
-				} else {
+				}
+				else {
 					printFromTo(instruction[1], instruction[3]);
 				}
 			}
@@ -256,21 +264,25 @@ public class OS {
 
 	private void writeFile(String[] instruction) {
 		try {
-			File yourFile = new File(instruction[1]);
-			yourFile.createNewFile(); // if file already exists will do nothing
-			FileWriter myWriter = new FileWriter(instruction[1]);
-			myWriter.write(instruction[2]);
+			File yourFile = new File(executingProcess.getMap().getOrDefault(instruction[1], instruction[1]) + ".txt");
+			yourFile.createNewFile();
+			FileWriter myWriter = new FileWriter(
+					executingProcess.getMap().getOrDefault(instruction[1], instruction[1]) + ".txt");
+			myWriter.write(executingProcess.getMap().getOrDefault(instruction[2], instruction[2]));
 			myWriter.close();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void read(String[] instruction, int outputPosition) {
+	public void readFile(String[] instruction, int outputPosition) {
 
-		try (Stream<String> stream = Files.lines(Paths.get(instruction[outputPosition + 1]))) {
+		try (Stream<String> stream = Files.lines(Paths.get(executingProcess.getMap()
+				.getOrDefault(instruction[outputPosition + 1], instruction[outputPosition + 1])))) {
 			instruction[outputPosition] = stream.collect(Collectors.joining(System.lineSeparator()));
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			ex.printStackTrace();
 		}
 		executingProcess.decrementNextInstruction();
@@ -278,39 +290,41 @@ public class OS {
 
 	@SuppressWarnings("resource")
 	public void input(String[] instruction, int outputPosition) {
-		System.out.println("Please enter a value");
+		slowPrint("Please enter a value");
 		try {
 			Scanner sc = new Scanner(System.in);
 			instruction[outputPosition] = sc.nextLine();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		executingProcess.decrementNextInstruction();
 	}
 
-	public void assign(String[] instruction) {
-		executingProcess.getMap().put(instruction[1],
-				executingProcess.getMap().getOrDefault(instruction[2], instruction[2]));
-	}
-
 	public void print(String[] instruction) {
+		System.out.println("--------------------------------------");
 		System.out.println(executingProcess.getMap().getOrDefault(instruction[1], instruction[1]));
+		System.out.println("--------------------------------------");
 	}
 
 	public void printFromTo(String a, String b) {
+		System.out.println("--------------------------------------");
 		Integer x = Integer.parseInt(executingProcess.getMap().getOrDefault(a, a));
 		Integer y = Integer.parseInt(executingProcess.getMap().getOrDefault(b, b));
 		for (int i = x; i < y; i++) {
 			System.out.print(i + ", ");
 		}
 		System.out.println(y);
+		System.out.println("--------------------------------------");
+
 	}
 
 	public void semWait(Mutex mutex) {
 		if (mutex.isValue()) {
 			mutex.setOwnerID(executingProcess.getPID());
 			mutex.setValue(false);
-		} else {
+		}
+		else {
 			mutex.getBlockedQ().add(executingProcess);
 			blockedQ.add(executingProcess);
 			executingProcess = null;
@@ -323,7 +337,9 @@ public class OS {
 				mutex.setValue(true);
 			else {
 				Process process = mutex.getBlockedQ().remove();
+				blockedQ.remove(process);
 				mutex.setOwnerID(process.getPID());
+				process.setTimetolive(timeSlice);
 				readyQ.add(process);
 			}
 		}
@@ -332,7 +348,10 @@ public class OS {
 	public static String printQueue(LinkedList<Process> q) {
 		String res = "";
 		for (int i = 0; i < q.size(); i++) {
-			res += q.get(i);
+			if (i == q.size() - 1)
+				res += q.get(i);
+			else
+				res += q.get(i) + ", ";
 		}
 		return res;
 	}
@@ -341,22 +360,35 @@ public class OS {
 
 		Process nextProcess;
 
-		while (executingProcess != null || !readyQ.isEmpty()) {
-
-			System.out.println("clk : " + clockCycles);
+		while (executingProcess != null || !readyQ.isEmpty() || !newQ.isEmpty()) {
+			for (int i = 0; i < newQ.size(); i++) {
+				if (newQ.get(i).getArrivalTime() == clockCycles) {
+					readyQ.add(newQ.get(i));
+					newQ.remove(newQ.get(i));
+				}
+			}
+			System.out.println("\nclock : " + clockCycles);
 			nextProcess = scheduler.nextProcess(readyQ, executingProcess, clockCycles);
 
 			if (nextProcess != executingProcess) {
-				if (executingProcess != null)
+				if (executingProcess != null) {
 					readyQ.add(executingProcess);
+					executingProcess.setTimetolive(timeSlice);
+				}
 				executingProcess = nextProcess;
 				readyQ.remove(nextProcess);
-				System.out.println("Ready Queue: " + printQueue((LinkedList<Process>) readyQ) + "\n" + "Blocked Queue: "
-						+ printQueue((LinkedList<Process>) blockedQ));
+				System.out.println("Ready Queue: [" + printQueue((LinkedList<Process>) readyQ) + "]" + "\n"
+						+ "Blocked Queue: [" + printQueue((LinkedList<Process>) blockedQ) + "]");
 				System.out.println("Current Process: P" + executingProcess.getPID());
 			}
 
 			if (executingProcess != null) {
+				if (executingProcess.getTimetolive() == 0) {
+					executingProcess.setTimetolive(timeSlice);
+					System.out.println("Ready Queue: [" + printQueue((LinkedList<Process>) readyQ) + "]" + "\n"
+							+ "Blocked Queue: [" + printQueue((LinkedList<Process>) blockedQ) + "]");
+					System.out.println("Current Process: P" + executingProcess.getPID());
+				}
 				String[] nextInstruction = executingProcess.getNextInstruction();
 				String instructionToPrint = "";
 				for (int i = 0; i < nextInstruction.length; i++) {
@@ -372,8 +404,9 @@ public class OS {
 			}
 			clockCycles++;
 			try {
-				TimeUnit.SECONDS.sleep(2);
-			} catch (InterruptedException e) {
+				TimeUnit.SECONDS.sleep(4);
+			}
+			catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
