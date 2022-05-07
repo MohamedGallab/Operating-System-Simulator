@@ -31,18 +31,20 @@ public class OS {
 		addMutex("file");
 	}
 
-	
-
 	public void addMutex(String mutex) {
 		mutexes.put(mutex, new Mutex(mutex));
 	}
 
-	public void createProcess(String path, int arrivalTime) throws IOException {
-		ArrayList<String[]> instructions = interpreter.parse(path);
-		newQ.add(new Process(pid++, instructions, this.timeSlice, arrivalTime));
+	public void createProcess(String path, int arrivalTime) {
+		ArrayList<String[]> instructions;
+		try {
+			instructions = interpreter.parse(path);
+			newQ.add(new Process(pid++, instructions, this.timeSlice, arrivalTime));
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-
-	
 
 	public void executeInstruction(String[] instruction) {
 
@@ -271,7 +273,7 @@ public class OS {
 			}
 		}
 	}
-	
+
 	public void start() {
 		System.out.println("Hello and welcome to SteakHolderOS");
 		slowPrint("Do you want to specify the amount of time slices allowed per process? Default is 2.(Y/N)");
@@ -394,7 +396,7 @@ public class OS {
 		}
 		slowPrint("Beginning execution.....\n");
 	}
-	
+
 	public static void sleep(int x) {
 		try {
 			Thread.sleep(x);
@@ -418,7 +420,10 @@ public class OS {
 
 	public static void main(String[] args) {
 		OS os = new OS();
-		os.start();
+		//os.start();
+		os.createProcess("Program_1.txt", 0);
+		os.createProcess("Program_2.txt", 1);
+		os.createProcess("Program_3.txt", 4);
 		os.run();
 		slowPrint("\nAll processes have been executed successfully!");
 		sleep(1000);
