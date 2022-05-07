@@ -31,26 +31,7 @@ public class OS {
 		addMutex("file");
 	}
 
-	public static void sleep(int x) {
-		try {
-			Thread.sleep(x);
-		}
-		catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-		}
-	}
-
-	public static void slowPrint(String text) {
-		for (int i = 0; i < text.length(); i++) {
-			System.out.printf("%c", text.charAt(i));
-			try {
-				Thread.sleep(70);
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
+	
 
 	public void addMutex(String mutex) {
 		mutexes.put(mutex, new Mutex(mutex));
@@ -61,128 +42,7 @@ public class OS {
 		newQ.add(new Process(pid++, instructions, this.timeSlice, arrivalTime));
 	}
 
-	public void start() {
-		System.out.println("Hello and welcome to SteakHolderOS");
-		slowPrint("Do you want to specify the amount of time slices allowed per process? Default is 2.(Y/N)");
-		Scanner sc = new Scanner(System.in);
-		sleep(1000);
-		while (true) {
-			String wantsSlices = sc.nextLine();
-			if (wantsSlices.toLowerCase().equals("y")) {
-				int slices;
-				slowPrint("Enter the number of slices you want:");
-				while (true) {
-					try {
-						sc = new Scanner(System.in);
-						slices = sc.nextInt();
-
-						break;
-					}
-					catch (Exception ex) {
-						sleep(1000);
-						System.out.println("The character you wrote was not a number!");
-						sleep(1000);
-						slowPrint("Enter the number of slices you want:");
-					}
-				}
-				this.timeSlice = slices;
-				break;
-			}
-			else if (wantsSlices.toLowerCase().equals("n")) {
-				break;
-			}
-			else {
-				sleep(1000);
-				System.out.println("Please choose either Y or N!");
-				sleep(1000);
-				slowPrint("Do you want to specify the amount of time slices allowed per process? Default is 2.(Y/N)");
-			}
-		}
-		slowPrint("Enter the number of processes you want to add:");
-		int numOfProcesses;
-		while (true) {
-			try {
-				sc = new Scanner(System.in);
-				numOfProcesses = sc.nextInt();
-				if (numOfProcesses < 1)
-					throw new IndexOutOfBoundsException();
-				break;
-			}
-			catch (IndexOutOfBoundsException ex) {
-				sleep(1000);
-				System.out.println("Please enter a number greater than 0!");
-				sleep(1000);
-				slowPrint("Enter the number of processes you want to add:");
-			}
-			catch (Exception ex) {
-				sleep(1000);
-				System.out.println("The character you wrote was not a number!");
-				sleep(1000);
-				slowPrint("Enter the number of processes you want to add:");
-			}
-		}
-		ArrayList<Integer> arrivals = new ArrayList<Integer>();
-
-		for (int i = 1; i < numOfProcesses + 1; i++) {
-			slowPrint("Enter the path for process " + i + ":");
-			String path = "";
-			int time = 0;
-			while (true) {
-				try {
-					sc = new Scanner(System.in);
-					path = sc.nextLine();
-					this.interpreter.parse(path);
-					break;
-				}
-				catch (Exception ex) {
-					sleep(1000);
-					System.out.println("Invalid path!");
-					sleep(1000);
-					slowPrint("Enter the path for process " + i + ":");
-				}
-			}
-			slowPrint("Enter the time you wish for process " + i + " to arrive:");
-
-			while (true) {
-				try {
-					sc = new Scanner(System.in);
-					time = sc.nextInt();
-					if (time < 0)
-						throw new IndexOutOfBoundsException();
-					if (arrivals.contains(time))
-						throw new ArithmeticException();
-					break;
-				}
-				catch (IndexOutOfBoundsException ex) {
-					sleep(1000);
-					System.out.println("Please enter a positive number!");
-					sleep(1000);
-					slowPrint("Enter the time you wish for process " + i + " to arrive:");
-				}
-				catch (ArithmeticException ex) {
-					sleep(1000);
-					System.out.println("Another process will arrive at this time. Please pick a different time!");
-					sleep(1000);
-					slowPrint("Enter the time you wish for process " + i + " to arrive:");
-				}
-				catch (Exception ex) {
-					sleep(1000);
-					System.out.println("The character you wrote was not a number!");
-					sleep(1000);
-					slowPrint("Enter the time you wish for process " + i + " to arrive:");
-				}
-			}
-			arrivals.add(time);
-			try {
-				this.createProcess(path, time);
-			}
-			catch (Exception ex) {
-
-			}
-			sleep(1000);
-		}
-		slowPrint("Beginning execution....." + "\n");
-	}
+	
 
 	public void executeInstruction(String[] instruction) {
 
@@ -377,7 +237,7 @@ public class OS {
 				}
 				executingProcess = nextProcess;
 				readyQ.remove(nextProcess);
-				System.out.println("Ready Queue: [" + printQueue((LinkedList<Process>) readyQ) + "]" + "\n"
+				System.out.println("Ready Queue: [" + printQueue((LinkedList<Process>) readyQ) + "]\n"
 						+ "Blocked Queue: [" + printQueue((LinkedList<Process>) blockedQ) + "]");
 				System.out.println("Current Process: P" + executingProcess.getPID());
 			}
@@ -385,7 +245,7 @@ public class OS {
 			if (executingProcess != null) {
 				if (executingProcess.getTimetolive() == 0) {
 					executingProcess.setTimetolive(timeSlice);
-					System.out.println("Ready Queue: [" + printQueue((LinkedList<Process>) readyQ) + "]" + "\n"
+					System.out.println("Ready Queue: [" + printQueue((LinkedList<Process>) readyQ) + "]\n"
 							+ "Blocked Queue: [" + printQueue((LinkedList<Process>) blockedQ) + "]");
 					System.out.println("Current Process: P" + executingProcess.getPID());
 				}
@@ -411,14 +271,158 @@ public class OS {
 			}
 		}
 	}
+	
+	public void start() {
+		System.out.println("Hello and welcome to SteakHolderOS");
+		slowPrint("Do you want to specify the amount of time slices allowed per process? Default is 2.(Y/N)");
+		Scanner sc = new Scanner(System.in);
+		sleep(1000);
+		while (true) {
+			String wantsSlices = sc.nextLine();
+			if (wantsSlices.toLowerCase().equals("y")) {
+				int slices;
+				slowPrint("Enter the number of slices you want:");
+				while (true) {
+					try {
+						sc = new Scanner(System.in);
+						slices = sc.nextInt();
+
+						break;
+					}
+					catch (Exception ex) {
+						sleep(1000);
+						System.out.println("The character you wrote was not a number!");
+						sleep(1000);
+						slowPrint("Enter the number of slices you want:");
+					}
+				}
+				this.timeSlice = slices;
+				break;
+			}
+			else if (wantsSlices.toLowerCase().equals("n")) {
+				break;
+			}
+			else {
+				sleep(1000);
+				System.out.println("Please choose either Y or N!");
+				sleep(1000);
+				slowPrint("Do you want to specify the amount of time slices allowed per process? Default is 2.(Y/N)");
+			}
+		}
+		slowPrint("Enter the number of processes you want to add:");
+		int numOfProcesses;
+		while (true) {
+			try {
+				sc = new Scanner(System.in);
+				numOfProcesses = sc.nextInt();
+				if (numOfProcesses < 1)
+					throw new IndexOutOfBoundsException();
+				break;
+			}
+			catch (IndexOutOfBoundsException ex) {
+				sleep(1000);
+				System.out.println("Please enter a number greater than 0!");
+				sleep(1000);
+				slowPrint("Enter the number of processes you want to add:");
+			}
+			catch (Exception ex) {
+				sleep(1000);
+				System.out.println("The character you wrote was not a number!");
+				sleep(1000);
+				slowPrint("Enter the number of processes you want to add:");
+			}
+		}
+		ArrayList<Integer> arrivals = new ArrayList<Integer>();
+
+		for (int i = 1; i < numOfProcesses + 1; i++) {
+			slowPrint("Enter the path for process " + i + ":");
+			String path = "";
+			int time = 0;
+			while (true) {
+				try {
+					sc = new Scanner(System.in);
+					path = sc.nextLine();
+					this.interpreter.parse(path);
+					break;
+				}
+				catch (Exception ex) {
+					sleep(1000);
+					System.out.println("Invalid path!");
+					sleep(1000);
+					slowPrint("Enter the path for process " + i + ":");
+				}
+			}
+			slowPrint("Enter the time you wish for process " + i + " to arrive:");
+
+			while (true) {
+				try {
+					sc = new Scanner(System.in);
+					time = sc.nextInt();
+					if (time < 0)
+						throw new IndexOutOfBoundsException();
+					if (arrivals.contains(time))
+						throw new ArithmeticException();
+					break;
+				}
+				catch (IndexOutOfBoundsException ex) {
+					sleep(1000);
+					System.out.println("Please enter a positive number!");
+					sleep(1000);
+					slowPrint("Enter the time you wish for process " + i + " to arrive:");
+				}
+				catch (ArithmeticException ex) {
+					sleep(1000);
+					System.out.println("Another process will arrive at this time. Please pick a different time!");
+					sleep(1000);
+					slowPrint("Enter the time you wish for process " + i + " to arrive:");
+				}
+				catch (Exception ex) {
+					sleep(1000);
+					System.out.println("The character you wrote was not a number!");
+					sleep(1000);
+					slowPrint("Enter the time you wish for process " + i + " to arrive:");
+				}
+			}
+			arrivals.add(time);
+			try {
+				this.createProcess(path, time);
+			}
+			catch (Exception ex) {
+
+			}
+			sleep(1000);
+		}
+		slowPrint("Beginning execution.....\n");
+	}
+	
+	public static void sleep(int x) {
+		try {
+			Thread.sleep(x);
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+	}
+
+	public static void slowPrint(String text) {
+		for (int i = 0; i < text.length(); i++) {
+			System.out.printf("%c", text.charAt(i));
+			try {
+				Thread.sleep(70);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+		}
+	}
 
 	public static void main(String[] args) {
 		OS os = new OS();
 		os.start();
 		os.run();
-		slowPrint("\n" + "All processes have been executed successfully!");
+		slowPrint("\nAll processes have been executed successfully!");
 		sleep(1000);
-		System.out.println("\n" + "Credits :");
+		System.out.println("\nCredits :");
 		sleep(1000);
 		System.out.println("Amr Mohamed");
 		sleep(1000);
