@@ -152,7 +152,7 @@ public class OS {
 
 	@SuppressWarnings("resource")
 	public void input(String[] instruction, int outputPosition) {
-		slowPrint("Please enter a value");
+		System.out.println("Please enter a value");
 		try {
 			Scanner sc = new Scanner(System.in);
 			instruction[outputPosition] = sc.nextLine();
@@ -208,14 +208,23 @@ public class OS {
 	}
 
 	public static String printQueue(LinkedList<Process> q) {
-		String res = "";
+		String res = "[";
 		for (int i = 0; i < q.size(); i++) {
 			if (i == q.size() - 1)
-				res += q.get(i);
+				res += (q.get(i));
 			else
 				res += q.get(i) + ", ";
 		}
-		return res;
+		return res += "]";
+	}
+
+	public void admitNewProcesses() {
+		for (int i = 0; i < newQ.size(); i++) {
+			if (newQ.get(i).getArrivalTime() == clockCycles) {
+				readyQ.add(newQ.get(i));
+				newQ.remove(newQ.get(i));
+			}
+		}
 	}
 
 	public void run() {
@@ -223,13 +232,11 @@ public class OS {
 		Process nextProcess;
 
 		while (executingProcess != null || !readyQ.isEmpty() || !newQ.isEmpty()) {
-			for (int i = 0; i < newQ.size(); i++) {
-				if (newQ.get(i).getArrivalTime() == clockCycles) {
-					readyQ.add(newQ.get(i));
-					newQ.remove(newQ.get(i));
-				}
-			}
-			System.out.println("\nclock : " + clockCycles);
+
+			System.out.println("\n\nclock : " + clockCycles);
+
+			admitNewProcesses();
+
 			nextProcess = scheduler.nextProcess(readyQ, executingProcess, clockCycles);
 
 			if (nextProcess != executingProcess) {
@@ -239,34 +246,32 @@ public class OS {
 				}
 				executingProcess = nextProcess;
 				readyQ.remove(nextProcess);
-				System.out.println("Ready Queue: [" + printQueue((LinkedList<Process>) readyQ) + "]\n"
-						+ "Blocked Queue: [" + printQueue((LinkedList<Process>) blockedQ) + "]");
-				System.out.println("Current Process: P" + executingProcess.getPID());
+				System.out.println("	Ready Queue: " + printQueue((LinkedList<Process>) readyQ));
+				System.out.println("	Blocked Queue: " + printQueue((LinkedList<Process>) blockedQ));
 			}
 
 			if (executingProcess != null) {
 				if (executingProcess.getTimetolive() == 0) {
 					executingProcess.setTimetolive(timeSlice);
-					System.out.println("Ready Queue: [" + printQueue((LinkedList<Process>) readyQ) + "]\n"
-							+ "Blocked Queue: [" + printQueue((LinkedList<Process>) blockedQ) + "]");
-					System.out.println("Current Process: P" + executingProcess.getPID());
+					System.out.println("	Ready Queue: " + printQueue((LinkedList<Process>) readyQ));
+					System.out.println("	Blocked Queue: " + printQueue((LinkedList<Process>) blockedQ));
 				}
 				String[] nextInstruction = executingProcess.getNextInstruction();
 				String instructionToPrint = "";
 				for (int i = 0; i < nextInstruction.length; i++) {
 					instructionToPrint += (" " + nextInstruction[i]);
 				}
+				System.out.println("	Current Process: " + executingProcess);
 				System.out.println("	Current Instruction: " + instructionToPrint);
 				executingProcess.decrementTimeToLive();
 				executeInstruction(nextInstruction);
-				if (executingProcess != null)
-					if (executingProcess.isProcessDone()) {
-						executingProcess = null;
-					}
+				if (executingProcess.isProcessDone()) {
+					executingProcess = null;
+				}
 			}
 			clockCycles++;
 			try {
-				TimeUnit.SECONDS.sleep(4);
+				TimeUnit.SECONDS.sleep(2);
 			}
 			catch (InterruptedException e) {
 				e.printStackTrace();
@@ -420,10 +425,10 @@ public class OS {
 
 	public static void main(String[] args) {
 		OS os = new OS();
-		//os.start();
-		os.createProcess("Program_1.txt", 0);
-		os.createProcess("Program_2.txt", 1);
-		os.createProcess("Program_3.txt", 4);
+		// os.start();
+		os.createProcess("Program_1.txt", 6);
+//		os.createProcess("Program_2.txt", 1);
+//		os.createProcess("Program_3.txt", 4);
 		os.run();
 		slowPrint("\nAll processes have been executed successfully!");
 		sleep(1000);
