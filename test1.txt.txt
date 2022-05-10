@@ -1,0 +1,4 @@
+print a
+semWait userInput
+semSignal userInput
+print b

@@ -1,0 +1,62 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class SystemCallHandler {
+	public void writeFile(String[] instruction, Process executingProcess) {
+		try {
+			File yourFile = new File(executingProcess.getMap().getOrDefault(instruction[1], instruction[1]) + ".txt");
+			yourFile.createNewFile();
+			FileWriter myWriter = new FileWriter(
+					executingProcess.getMap().getOrDefault(instruction[1], instruction[1]) + ".txt");
+			myWriter.write(executingProcess.getMap().getOrDefault(instruction[2], instruction[2]));
+			myWriter.close();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void readFile(String[] instruction, int outputPosition , Process executingProcess) {
+
+		try (Stream<String> stream = Files.lines(Paths.get(executingProcess.getMap()
+				.getOrDefault(instruction[outputPosition + 1], instruction[outputPosition + 1])))) {
+			instruction[outputPosition] = stream.collect(Collectors.joining(System.lineSeparator()));
+		}
+		catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public void input(String[] instruction, int outputPosition) {
+		System.out.println("Please enter a value");
+		try {
+			Scanner sc = new Scanner(System.in);
+			instruction[outputPosition] = sc.nextLine();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	public void print(String[] instruction, Process executingProcess) {
+		System.out.println("--------------------------------------");
+		System.out.println(executingProcess.getMap().getOrDefault(instruction[1], instruction[1]));
+		System.out.println("--------------------------------------");
+	}
+	
+	public void printFromTo(String a, String b, Process executingProcess) {
+		System.out.println("--------------------------------------");
+		Integer x = Integer.parseInt(executingProcess.getMap().getOrDefault(a, a));
+		Integer y = Integer.parseInt(executingProcess.getMap().getOrDefault(b, b));
+		for (int i = x; i < y; i++) {
+			System.out.print(i + ", ");
+		}
+		System.out.println(y);
+		System.out.println("--------------------------------------");
+	}
+}

@@ -24,12 +24,19 @@ public class OS {
 	private Process executingProcess;
 	private int timeSlice = 2;
 	private static int pid = 1;
-
-	public OS() {
+	private SystemCallHandler systemCallHandler = new SystemCallHandler();
+	private static OS instance;
+	
+	private OS() {
 		addMutex("userInput");
 		addMutex("userOutput");
 		addMutex("file");
 	}
+	public static OS getInstance() {
+	if (instance == null)
+		instance = new OS();
+	return instance;
+	}		
 
 	public void addMutex(String mutex) {
 		mutexes.put(mutex, new Mutex(mutex));
@@ -51,21 +58,25 @@ public class OS {
 		switch (instruction[0]) {
 		case "print":
 			if (instruction[1].equals("readFile")) {
-				readFile(instruction, 1);
+				systemCallHandler.readFile(instruction, 1, executingProcess);
+				executingProcess.decrementNextInstruction();
 			}
 			else if (instruction[1].equals("input")) {
-				input(instruction, 1);
+				systemCallHandler.input(instruction, 1);
+				executingProcess.decrementNextInstruction();
 			}
 			else {
-				print(instruction);
+				systemCallHandler.print(instruction, executingProcess);
 			}
 			break;
 		case "assign":
 			if (instruction[2].equals("readFile")) {
-				readFile(instruction, 2);
+				systemCallHandler.readFile(instruction, 2, executingProcess);
+				executingProcess.decrementNextInstruction();
 			}
 			else if (instruction[2].equals("input")) {
-				input(instruction, 2);
+				systemCallHandler.input(instruction, 2);
+				executingProcess.decrementNextInstruction();
 			}
 			else {
 				executingProcess.assign(instruction);
@@ -73,43 +84,49 @@ public class OS {
 			break;
 		case "writeFile":
 			if (instruction[2].equals("readFile")) {
-				readFile(instruction, 2);
+				systemCallHandler.readFile(instruction, 2, executingProcess);
+				executingProcess.decrementNextInstruction();
 			}
 			else if (instruction[2].equals("input")) {
-				input(instruction, 2);
+				systemCallHandler.input(instruction, 2);
+				executingProcess.decrementNextInstruction();
 			}
 			else {
-				writeFile(instruction);
+				systemCallHandler.writeFile(instruction, executingProcess);
 			}
 			break;
 		case "printFromTo":
 			if (instruction[1].equals("readFile")) {
-				readFile(instruction, 1);
+				systemCallHandler.readFile(instruction, 2, executingProcess);
+				executingProcess.decrementNextInstruction();
 			}
 			else if (instruction[1].equals("input")) {
-				input(instruction, 1);
+				systemCallHandler.input(instruction, 1);
+				executingProcess.decrementNextInstruction();
 			}
 			else if (instruction.length > 3 && instruction[3].equals("readFile")) {
-				readFile(instruction, 3);
+				systemCallHandler.readFile(instruction, 3, executingProcess);
+				executingProcess.decrementNextInstruction();
 			}
 			else if (instruction.length > 3 && instruction[3].equals("input")) {
-				input(instruction, 3);
+				systemCallHandler.input(instruction, 3);
+				executingProcess.decrementNextInstruction();
 			}
 			else {
 				if (instruction.length == 3) {
-					printFromTo(instruction[1], instruction[2]);
+					systemCallHandler.printFromTo(instruction[1], instruction[2], executingProcess);
 				}
 				else if (instruction.length == 4) {
 					try {
 						Integer x = Integer.parseInt(instruction[2]);
-						printFromTo(instruction[1], instruction[2]);
+						systemCallHandler.printFromTo(instruction[1], instruction[2], executingProcess);
 					}
 					catch (Exception e) {
-						printFromTo(instruction[1], instruction[3]);
+						systemCallHandler.printFromTo(instruction[1], instruction[3], executingProcess);
 					}
 				}
 				else {
-					printFromTo(instruction[1], instruction[3]);
+					systemCallHandler.printFromTo(instruction[1], instruction[3], executingProcess);
 				}
 			}
 			break;
@@ -122,63 +139,6 @@ public class OS {
 		default:
 			break;
 		}
-	}
-
-	private void writeFile(String[] instruction) {
-		try {
-			File yourFile = new File(executingProcess.getMap().getOrDefault(instruction[1], instruction[1]) + ".txt");
-			yourFile.createNewFile();
-			FileWriter myWriter = new FileWriter(
-					executingProcess.getMap().getOrDefault(instruction[1], instruction[1]) + ".txt");
-			myWriter.write(executingProcess.getMap().getOrDefault(instruction[2], instruction[2]));
-			myWriter.close();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void readFile(String[] instruction, int outputPosition) {
-
-		try (Stream<String> stream = Files.lines(Paths.get(executingProcess.getMap()
-				.getOrDefault(instruction[outputPosition + 1], instruction[outputPosition + 1])))) {
-			instruction[outputPosition] = stream.collect(Collectors.joining(System.lineSeparator()));
-		}
-		catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		executingProcess.decrementNextInstruction();
-	}
-
-	@SuppressWarnings("resource")
-	public void input(String[] instruction, int outputPosition) {
-		System.out.println("Please enter a value");
-		try {
-			Scanner sc = new Scanner(System.in);
-			instruction[outputPosition] = sc.nextLine();
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		executingProcess.decrementNextInstruction();
-	}
-
-	public void print(String[] instruction) {
-		System.out.println("--------------------------------------");
-		System.out.println(executingProcess.getMap().getOrDefault(instruction[1], instruction[1]));
-		System.out.println("--------------------------------------");
-	}
-
-	public void printFromTo(String a, String b) {
-		System.out.println("--------------------------------------");
-		Integer x = Integer.parseInt(executingProcess.getMap().getOrDefault(a, a));
-		Integer y = Integer.parseInt(executingProcess.getMap().getOrDefault(b, b));
-		for (int i = x; i < y; i++) {
-			System.out.print(i + ", ");
-		}
-		System.out.println(y);
-		System.out.println("--------------------------------------");
-
 	}
 
 	public void semWait(Mutex mutex) {
@@ -232,12 +192,12 @@ public class OS {
 		Process nextProcess;
 
 		while (executingProcess != null || !readyQ.isEmpty() || !newQ.isEmpty()) {
-
+		
 			System.out.println("\n\nclock : " + clockCycles);
-
 			admitNewProcesses();
-
-			nextProcess = scheduler.nextProcess(readyQ, executingProcess, clockCycles);
+			int initialRQSize = readyQ.size();
+			int initialBQSize = blockedQ.size();
+			nextProcess = scheduler.nextProcess(readyQ, executingProcess);
 
 			if (nextProcess != executingProcess) {
 				if (executingProcess != null) {
@@ -246,15 +206,11 @@ public class OS {
 				}
 				executingProcess = nextProcess;
 				readyQ.remove(nextProcess);
-				System.out.println("	Ready Queue: " + printQueue((LinkedList<Process>) readyQ));
-				System.out.println("	Blocked Queue: " + printQueue((LinkedList<Process>) blockedQ));
+				
 			}
-
 			if (executingProcess != null) {
 				if (executingProcess.getTimetolive() == 0) {
 					executingProcess.setTimetolive(timeSlice);
-					System.out.println("	Ready Queue: " + printQueue((LinkedList<Process>) readyQ));
-					System.out.println("	Blocked Queue: " + printQueue((LinkedList<Process>) blockedQ));
 				}
 				String[] nextInstruction = executingProcess.getNextInstruction();
 				String instructionToPrint = "";
@@ -265,7 +221,11 @@ public class OS {
 				System.out.println("	Current Instruction: " + instructionToPrint);
 				executingProcess.decrementTimeToLive();
 				executeInstruction(nextInstruction);
-				if (executingProcess.isProcessDone()) {
+				if (readyQ.size()!=initialRQSize || blockedQ.size()!=initialBQSize){
+					System.out.println("	Ready Queue: " + printQueue((LinkedList<Process>) readyQ));
+					System.out.println("	Blocked Queue: " + printQueue((LinkedList<Process>) blockedQ));
+				}
+				if (executingProcess != null && executingProcess.isProcessDone()) {
 					executingProcess = null;
 				}
 			}
@@ -424,11 +384,8 @@ public class OS {
 	}
 
 	public static void main(String[] args) {
-		OS os = new OS();
-		// os.start();
-		os.createProcess("Program_1.txt", 6);
-//		os.createProcess("Program_2.txt", 1);
-//		os.createProcess("Program_3.txt", 4);
+		OS os = getInstance();
+	    os.start();
 		os.run();
 		slowPrint("\nAll processes have been executed successfully!");
 		sleep(1000);
