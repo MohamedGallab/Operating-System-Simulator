@@ -4,7 +4,7 @@ import java.util.HashMap;
 public class Process {
 	private int PID;
 	private ArrayList<String[]> instructions;
-	private int timetolive;
+	private int timeToLive;
 	private int arrivalTime;
 	private int currentInstruction = 0;
 	private HashMap<String, String> map = new HashMap<String, String>();
@@ -13,7 +13,7 @@ public class Process {
 		super();
 		PID = pID;
 		this.instructions = instructions;
-		this.timetolive = timetolive;
+		this.timeToLive = timetolive;
 		this.arrivalTime = arrivalTime;
 	}
 
@@ -26,7 +26,7 @@ public class Process {
 	}
 
 	public void setTimetolive(int timetolive) {
-		this.timetolive = timetolive;
+		this.timeToLive = timetolive;
 	}
 
 	public int getCurrentInstruction() {
@@ -38,7 +38,7 @@ public class Process {
 	}
 
 	public void decrementTimeToLive() {
-		timetolive--;
+		timeToLive--;
 	}
 
 	public int getArrivalTime() {
@@ -54,7 +54,7 @@ public class Process {
 	}
 
 	public int getTimetolive() {
-		return timetolive;
+		return timeToLive;
 	}
 
 	public void decrementNextInstruction() {
@@ -66,13 +66,6 @@ public class Process {
 	}
 
 	public String toString() {
-		// add more stuff
 		return "P" + PID;
 	}
-	
-	public void assign(String[] instruction) {
-		map.put(instruction[1],
-				map.getOrDefault(instruction[2], instruction[2]));
-	}
-
 }

@@ -25,18 +25,20 @@ public class OS {
 	private int timeSlice = 2;
 	private static int pid = 1;
 	private SystemCallHandler systemCallHandler = new SystemCallHandler();
+	private boolean printQ = false;
 	private static OS instance;
-	
+
 	private OS() {
 		addMutex("userInput");
 		addMutex("userOutput");
 		addMutex("file");
 	}
+
 	public static OS getInstance() {
-	if (instance == null)
-		instance = new OS();
-	return instance;
-	}		
+		if (instance == null)
+			instance = new OS();
+		return instance;
+	}
 
 	public void addMutex(String mutex) {
 		mutexes.put(mutex, new Mutex(mutex));
@@ -79,7 +81,7 @@ public class OS {
 				executingProcess.decrementNextInstruction();
 			}
 			else {
-				executingProcess.assign(instruction);
+				systemCallHandler.assign(instruction, executingProcess);
 			}
 			break;
 		case "writeFile":
@@ -149,6 +151,7 @@ public class OS {
 		else {
 			mutex.getBlockedQ().add(executingProcess);
 			blockedQ.add(executingProcess);
+			printQ = true;
 			executingProcess = null;
 		}
 	}
@@ -163,6 +166,7 @@ public class OS {
 				mutex.setOwnerID(process.getPID());
 				process.setTimetolive(timeSlice);
 				readyQ.add(process);
+				printQ = true;
 			}
 		}
 	}
@@ -182,36 +186,30 @@ public class OS {
 		for (int i = 0; i < newQ.size(); i++) {
 			if (newQ.get(i).getArrivalTime() == clockCycles) {
 				readyQ.add(newQ.get(i));
+				printQ = true;
 				newQ.remove(newQ.get(i));
 			}
 		}
 	}
 
 	public void run() {
-
 		Process nextProcess;
 
 		while (executingProcess != null || !readyQ.isEmpty() || !newQ.isEmpty()) {
-		
 			System.out.println("\n\nclock : " + clockCycles);
+			printQ = false;
 			admitNewProcesses();
-			int initialRQSize = readyQ.size();
-			int initialBQSize = blockedQ.size();
 			nextProcess = scheduler.nextProcess(readyQ, executingProcess);
-
-			if (nextProcess != executingProcess) {
+			if (nextProcess != null) {
 				if (executingProcess != null) {
 					readyQ.add(executingProcess);
 					executingProcess.setTimetolive(timeSlice);
 				}
 				executingProcess = nextProcess;
 				readyQ.remove(nextProcess);
-				
+				printQ = true;
 			}
 			if (executingProcess != null) {
-				if (executingProcess.getTimetolive() == 0) {
-					executingProcess.setTimetolive(timeSlice);
-				}
 				String[] nextInstruction = executingProcess.getNextInstruction();
 				String instructionToPrint = "";
 				for (int i = 0; i < nextInstruction.length; i++) {
@@ -221,7 +219,7 @@ public class OS {
 				System.out.println("	Current Instruction: " + instructionToPrint);
 				executingProcess.decrementTimeToLive();
 				executeInstruction(nextInstruction);
-				if (readyQ.size()!=initialRQSize || blockedQ.size()!=initialBQSize){
+				if (printQ) {
 					System.out.println("	Ready Queue: " + printQueue((LinkedList<Process>) readyQ));
 					System.out.println("	Blocked Queue: " + printQueue((LinkedList<Process>) blockedQ));
 				}
@@ -385,7 +383,7 @@ public class OS {
 
 	public static void main(String[] args) {
 		OS os = getInstance();
-	    os.start();
+		os.start();
 		os.run();
 		slowPrint("\nAll processes have been executed successfully!");
 		sleep(1000);

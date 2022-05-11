@@ -21,8 +21,8 @@ public class SystemCallHandler {
 			e.printStackTrace();
 		}
 	}
-	
-	public void readFile(String[] instruction, int outputPosition , Process executingProcess) {
+
+	public void readFile(String[] instruction, int outputPosition, Process executingProcess) {
 
 		try (Stream<String> stream = Files.lines(Paths.get(executingProcess.getMap()
 				.getOrDefault(instruction[outputPosition + 1], instruction[outputPosition + 1])))) {
@@ -32,7 +32,7 @@ public class SystemCallHandler {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public void input(String[] instruction, int outputPosition) {
 		System.out.println("Please enter a value");
 		try {
@@ -43,12 +43,13 @@ public class SystemCallHandler {
 			ex.printStackTrace();
 		}
 	}
+
 	public void print(String[] instruction, Process executingProcess) {
 		System.out.println("--------------------------------------");
 		System.out.println(executingProcess.getMap().getOrDefault(instruction[1], instruction[1]));
 		System.out.println("--------------------------------------");
 	}
-	
+
 	public void printFromTo(String a, String b, Process executingProcess) {
 		System.out.println("--------------------------------------");
 		Integer x = Integer.parseInt(executingProcess.getMap().getOrDefault(a, a));
@@ -58,5 +59,10 @@ public class SystemCallHandler {
 		}
 		System.out.println(y);
 		System.out.println("--------------------------------------");
+	}
+
+	public void assign(String[] instruction, Process executingProcess) {
+		executingProcess.getMap().put(instruction[1],
+				executingProcess.getMap().getOrDefault(instruction[2], instruction[2]));
 	}
 }
