@@ -50,15 +50,12 @@ public class SystemCallHandler {
 		System.out.println("--------------------------------------");
 	}
 
-	public void printFromTo(String a, String b, Process executingProcess) {
-		System.out.println("--------------------------------------");
-		Integer x = Integer.parseInt(executingProcess.getMap().getOrDefault(a, a));
-		Integer y = Integer.parseInt(executingProcess.getMap().getOrDefault(b, b));
-		for (int i = x; i < y; i++) {
-			System.out.print(i + ", ");
-		}
-		System.out.println(y);
-		System.out.println("--------------------------------------");
+	public void printOutput(String s) {
+		System.out.print(s);
+	}
+	
+	public void printlnOutput(String s) {
+		System.out.println(s);
 	}
 
 	public void assign(String[] instruction, Process executingProcess) {

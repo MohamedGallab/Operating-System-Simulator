@@ -116,19 +116,19 @@ public class OS {
 			}
 			else {
 				if (instruction.length == 3) {
-					systemCallHandler.printFromTo(instruction[1], instruction[2], executingProcess);
+					printFromTo(instruction[1], instruction[2]);
 				}
 				else if (instruction.length == 4) {
 					try {
 						Integer x = Integer.parseInt(instruction[2]);
-						systemCallHandler.printFromTo(instruction[1], instruction[2], executingProcess);
+						printFromTo(instruction[1], instruction[2]);
 					}
 					catch (Exception e) {
-						systemCallHandler.printFromTo(instruction[1], instruction[3], executingProcess);
+						printFromTo(instruction[1], instruction[3]);
 					}
 				}
 				else {
-					systemCallHandler.printFromTo(instruction[1], instruction[3], executingProcess);
+					printFromTo(instruction[1], instruction[3]);
 				}
 			}
 			break;
@@ -141,6 +141,17 @@ public class OS {
 		default:
 			break;
 		}
+	}
+	
+	public void printFromTo(String a, String b) {
+		systemCallHandler.printlnOutput("--------------------------------------");
+		Integer x = Integer.parseInt(executingProcess.getMap().getOrDefault(a, a));
+		Integer y = Integer.parseInt(executingProcess.getMap().getOrDefault(b, b));
+		for (int i = x; i < y; i++) {
+			systemCallHandler.printOutput(i + ", ");
+		}
+		systemCallHandler.printlnOutput(y+"");
+		systemCallHandler.printlnOutput("--------------------------------------");
 	}
 
 	public void semWait(Mutex mutex) {
