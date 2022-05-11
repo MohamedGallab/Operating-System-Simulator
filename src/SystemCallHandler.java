@@ -53,7 +53,7 @@ public class SystemCallHandler {
 	public void printOutput(String s) {
 		System.out.print(s);
 	}
-	
+
 	public void printlnOutput(String s) {
 		System.out.println(s);
 	}
