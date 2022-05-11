@@ -3,51 +3,43 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SystemCallHandler {
-	public void writeFile(String[] instruction, Process executingProcess) {
+	public void writeToDisk(String path, String data) {
 		try {
-			File yourFile = new File(executingProcess.getMap().getOrDefault(instruction[1], instruction[1]) + ".txt");
+			File yourFile = new File(path + ".txt");
 			yourFile.createNewFile();
-			FileWriter myWriter = new FileWriter(
-					executingProcess.getMap().getOrDefault(instruction[1], instruction[1]) + ".txt");
-			myWriter.write(executingProcess.getMap().getOrDefault(instruction[2], instruction[2]));
+			FileWriter myWriter = new FileWriter(path + ".txt");
+			myWriter.write(data);
 			myWriter.close();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void readFile(String[] instruction, int outputPosition, Process executingProcess) {
+	public String readFromDisk(String path) {
 
-		try (Stream<String> stream = Files.lines(Paths.get(executingProcess.getMap()
-				.getOrDefault(instruction[outputPosition + 1], instruction[outputPosition + 1])))) {
-			instruction[outputPosition] = stream.collect(Collectors.joining(System.lineSeparator()));
-		}
-		catch (IOException ex) {
+		try (Stream<String> stream = Files.lines(Paths.get(path))) {
+			return stream.collect(Collectors.joining(System.lineSeparator()));
+		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+		return "";
 	}
 
-	public void input(String[] instruction, int outputPosition) {
-		System.out.println("Please enter a value");
+	public String requestInput() {
+		printlnOutput("Please enter a value: ");
 		try {
 			Scanner sc = new Scanner(System.in);
-			instruction[outputPosition] = sc.nextLine();
-		}
-		catch (Exception ex) {
+			return sc.nextLine();
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	public void print(String[] instruction, Process executingProcess) {
-		System.out.println("--------------------------------------");
-		System.out.println(executingProcess.getMap().getOrDefault(instruction[1], instruction[1]));
-		System.out.println("--------------------------------------");
+		return "";
 	}
 
 	public void printOutput(String s) {
@@ -58,8 +50,12 @@ public class SystemCallHandler {
 		System.out.println(s);
 	}
 
-	public void assign(String[] instruction, Process executingProcess) {
-		executingProcess.getMap().put(instruction[1],
-				executingProcess.getMap().getOrDefault(instruction[2], instruction[2]));
+	public void modifyMemory(String key, String data,
+			HashMap<String, String> map) {
+		map.put(key, data);
+	}
+
+	public String readFromMemory(String key, HashMap<String, String> map) {
+		return map.getOrDefault(key, key);
 	}
 }
