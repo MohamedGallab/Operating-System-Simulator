@@ -2,23 +2,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Process {
-	private int PID;
-	private ArrayList<String[]> instructions;
+	private PCB PCB;
+//	private ArrayList<String[]> instructions;
 	private int timeToLive;
 	private int arrivalTime;
-	private int currentInstruction = 0;
-	private HashMap<String, String> map = new HashMap<String, String>();
+//	private HashMap<String, String> map = new HashMap<String, String>();
 
-	public Process(int pID, ArrayList<String[]> instructions, int timetolive, int arrivalTime) {
+	public Process(PCB PCB, ArrayList<String[]> instructions, int timetolive, int arrivalTime) {
 		super();
-		PID = pID;
 		this.instructions = instructions;
 		this.timeToLive = timetolive;
 		this.arrivalTime = arrivalTime;
 	}
 
 	public int getPID() {
-		return PID;
+		return PCB.PID;
 	}
 
 	public HashMap<String, String> getMap() {
@@ -29,13 +27,6 @@ public class Process {
 		this.timeToLive = timetolive;
 	}
 
-	public int getCurrentInstruction() {
-		return currentInstruction;
-	}
-
-	public void setCurrentInstruction(int currentInstruction) {
-		this.currentInstruction = currentInstruction;
-	}
 
 	public void decrementTimeToLive() {
 		timeToLive--;
@@ -45,8 +36,8 @@ public class Process {
 		return arrivalTime;
 	}
 
-	public String[] getNextInstruction() {
-		return instructions.get(currentInstruction++);
+	public int getNextInstruction() {
+		return PCB.getNextInstruction();
 	}
 
 	public ArrayList<String[]> getInstructions() {
