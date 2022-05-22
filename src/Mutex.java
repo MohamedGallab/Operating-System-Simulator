@@ -3,7 +3,7 @@ import java.util.Queue;
 
 public class Mutex {
 	private String resource;
-	private Queue<Process> blockedQ = new LinkedList<>();
+	private Queue<PCB> blockedQ = new LinkedList<>();
 	private int ownerID;
 	private boolean value = true;
 	
@@ -27,7 +27,7 @@ public class Mutex {
 		this.resource = resource;
 	}
 
-	public Queue<Process> getBlockedQ() {
+	public Queue<PCB> getBlockedQ() {
 		return blockedQ;
 	}
 

@@ -1,31 +1,24 @@
-import java.util.Arrays;
-
 public class PCB {
 	int PID;
-	ProcessState state;
-	int programCounter = 4;
-	int[] memoryBoundaries = new int[2];
+    ProcessState state;
+    int programCounter = 4;
+    int[] memoryBoundaries = new int[2];
+//	private ArrayList<String[]> instructions;
+//	private int timeToLive;
+//	private int arrivalTime;
+//	private int currentInstruction = 0;
+//	private HashMap<String, String> map = new HashMap<String, String>();
 
-	public PCB(int pID, ProcessState state, int programCounter, int[] memoryBoundaries) {
+	public PCB(int pID) {
 		super();
 		PID = pID;
-		this.state = state;
-		this.programCounter = programCounter;
-		this.memoryBoundaries = memoryBoundaries;
 	}
 
-	@Override
+	public int getPID() {
+		return PID;
+	}
+
 	public String toString() {
-		return "PCB [PID=" + PID + ", state=" + state + ", programCounter=" + programCounter + ", boundaries="
-				+ Arrays.toString(memoryBoundaries) + "]";
-	}
-
-	public void setBoundaries(int start, int end) {
-		memoryBoundaries[0] = start;
-		memoryBoundaries[1] = end;
-	}
-
-	public int getNextInstruction() {
-		return memoryBoundaries[0] + programCounter++;
+		return "P" + PID;
 	}
 }

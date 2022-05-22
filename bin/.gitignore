@@ -1,2 +1,9 @@
+/Interpreter.class
+/Mutex.class
+/OS.class
 /PCB.class
+/Process.class
 /ProcessState.class
+/Scheduler.class
+/SystemCallHandler.class
+/Team_68.zip
