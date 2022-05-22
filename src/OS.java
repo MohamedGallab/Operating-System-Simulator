@@ -41,8 +41,7 @@ public class OS {
 		ArrayList<String[]> instructions;
 		try {
 			instructions = interpreter.parse(path);
-			PCB pcb = new PCB(arrivalTime, null, arrivalTime, null);
-			newQ.add(new Process(pcb, instructions, this.timeSlice, arrivalTime));
+			newQ.add(new Process(pid++, instructions, this.timeSlice, arrivalTime));
 		}
 		catch (IOException e) {
 			e.printStackTrace();
