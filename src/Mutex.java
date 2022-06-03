@@ -3,15 +3,15 @@ import java.util.Queue;
 
 public class Mutex {
 	private String resource;
-	private Queue<PCB> blockedQ = new LinkedList<>();
-	private int ownerID;
+	private Queue<String> blockedQ = new LinkedList<>();
+	private String ownerID;
 	private boolean value = true;
 	
-	public int getOwnerID() {
+	public String getOwnerID() {
 		return ownerID;
 	}
 
-	public void setOwnerID(int ownerID) {
+	public void setOwnerID(String ownerID) {
 		this.ownerID = ownerID;
 	}
 
@@ -27,7 +27,7 @@ public class Mutex {
 		this.resource = resource;
 	}
 
-	public Queue<PCB> getBlockedQ() {
+	public Queue<String> getBlockedQ() {
 		return blockedQ;
 	}
 
